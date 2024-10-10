@@ -2,17 +2,11 @@
 
 # TODO#2: Setup ChromaDB
 
-# Create a new collection for storing image embeddings
-collection = client.create_collection("image_collection")
 
 # TODO#3: Load CLIP model and processor for generating image and text embeddings
 
 
 # TODO#4: Load and preprocess images
-
-# Preprocess images and generate embeddings
-images = [Image.open(image_path) for image_path in image_paths]
-inputs = processor(images=images, return_tensors="pt", padding=True)
 
 # Measure image ingestion time
 start_ingestion_time = time.time()
@@ -27,16 +21,10 @@ image_embeddings = [embedding.tolist() for embedding in image_embeddings]
 end_ingestion_time = time.time()
 ingestion_time = end_ingestion_time - start_ingestion_time
 
-# TODO#5: Add image embeddings to the collection with metadata
+# TODO#5: Add image embeddings to the collection with metadata and display ingestion time
 
-# Log the ingestion performance
-print(f"Image Data ingestion time: {ingestion_time:.4f} seconds")
 
-# Function to calculate "accuracy" score based on cosine similarity
-def calculate_accuracy(image_embedding, query_embedding):
-    # Cosine similarity between query and image embeddings
-    similarity = cosine_similarity([image_embedding], [query_embedding])[0][0]
-    return similarity
+# TODO#6: Create a function to calculate "accuracy" score based on cosine similarity
 
 # Define Gradio function
 def search_image(query):
@@ -49,13 +37,13 @@ def search_image(query):
     # Start measuring the query processing time
     start_time = time.time()
     
-    # TODO#6: Generate an embedding for the query text
+    # TODO#7: Generate an embedding for the query text
 
-    # TODO#7: Convert the query embedding from numpy array to a list
+    # TODO#8: Convert the query embedding from numpy array to a list
 
-    # TODO#8: Perform a vector search in the collection
+    # TODO#9: Perform a vector search in the collection
 
-    # TODO#9: Retrieve the matched image
+    # TODO#10: Retrieve the matched image
     
     # Calculate accuracy score based on cosine similarity
     accuracy_score = calculate_accuracy(matched_image_embedding, query_embedding[0])
@@ -64,7 +52,7 @@ def search_image(query):
     end_time = time.time()
     query_time = end_time - start_time
     
-    # TODO#10: Display result with accuracy, query time, and file name
+    # TODO#11: Display result with accuracy, query time, and file name
 
 # Suggested queries
 queries = [
@@ -87,7 +75,7 @@ with gr.Blocks() as gr_interface:
     with gr.Row():
         # Left Panel
         with gr.Column():
-            # TODO#11: Display the ingestion time of image embeddings
+            # TODO#12: Display the ingestion time of image embeddings
             
             gr.Markdown("### Input Panel")
             
@@ -109,7 +97,7 @@ with gr.Blocks() as gr_interface:
         # Right Panel
         with gr.Column():
             gr.Markdown("### Retrieved Image")
-            # TODO#12: Output for image result
+            # TODO#13: Output for image result
             
             # Output for accuracy score and query time
             accuracy_output = gr.Textbox(label="Performance")
@@ -120,4 +108,4 @@ with gr.Blocks() as gr_interface:
         # Cancel button to clear the inputs
         cancel_button.click(fn=lambda: (None, ""), outputs=[image_output, accuracy_output])
 
-# TODO#13: Launch the Gradio interface
+# TODO#14: Launch the Gradio interface
