@@ -1,30 +1,16 @@
-import torch
-import chromadb
-from PIL import Image
-from transformers import CLIPProcessor, CLIPModel
-import gradio as gr
-import time
-from sklearn.metrics.pairwise import cosine_similarity
+# TODO#1: Import necessary libraries
 
-# Step 1: Initialize ChromaDB client
-client = chromadb.Client()
+# TODO#2: Setup ChromaDB
 
-# Step 2: Create a new collection for storing image embeddings
+# Create a new collection for storing image embeddings
 collection = client.create_collection("image_collection")
 
-# Step 3: Load CLIP model and processor for generating image and text embeddings
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+# TODO#3: Load CLIP model and processor for generating image and text embeddings
 
-# Step 4: Load and preprocess images
-image_paths = [
-    "img/image-01.jpg",  # Eiffel Tower
-    "img/image-02.jpg",  # Pizza
-    "img/image-03.jpeg",  # Polar Bears
-    "img/image-04.jpg",  # Lava
-]
 
-# Step 5: Preprocess images and generate embeddings
+# TODO#4: Load and preprocess images
+
+# Preprocess images and generate embeddings
 images = [Image.open(image_path) for image_path in image_paths]
 inputs = processor(images=images, return_tensors="pt", padding=True)
 
@@ -41,12 +27,7 @@ image_embeddings = [embedding.tolist() for embedding in image_embeddings]
 end_ingestion_time = time.time()
 ingestion_time = end_ingestion_time - start_ingestion_time
 
-# Step 6: Add image embeddings to the collection with metadata
-collection.add(
-    embeddings=image_embeddings,
-    metadatas=[{"image": image_path} for image_path in image_paths],
-    ids=[str(i) for i in range(len(image_paths))]
-)
+# TODO#5: Add image embeddings to the collection with metadata
 
 # Log the ingestion performance
 print(f"Image Data ingestion time: {ingestion_time:.4f} seconds")
@@ -68,24 +49,13 @@ def search_image(query):
     # Start measuring the query processing time
     start_time = time.time()
     
-    # Generate an embedding for the query text
-    inputs = processor(text=query, return_tensors="pt", padding=True)
-    with torch.no_grad():
-        query_embedding = model.get_text_features(**inputs).numpy()
+    # TODO#6: Generate an embedding for the query text
 
-    # Convert the query embedding from numpy array to a list
-    query_embedding = query_embedding.tolist()
+    # TODO#7: Convert the query embedding from numpy array to a list
 
-    # Perform a vector search in the collection
-    results = collection.query(
-        query_embeddings=query_embedding,  # query_embeddings must be a list of lists
-        n_results=1  # Retrieve the top 1 similar image
-    )
+    # TODO#8: Perform a vector search in the collection
 
-    # Retrieve the matched image
-    result_image_path = results['metadatas'][0][0]['image']
-    matched_image_index = int(results['ids'][0][0])
-    matched_image_embedding = image_embeddings[matched_image_index]
+    # TODO#9: Retrieve the matched image
     
     # Calculate accuracy score based on cosine similarity
     accuracy_score = calculate_accuracy(matched_image_embedding, query_embedding[0])
@@ -94,10 +64,7 @@ def search_image(query):
     end_time = time.time()
     query_time = end_time - start_time
     
-    # Display result with accuracy, query time, and file name
-    result_image = Image.open(result_image_path)
-    file_name = result_image_path.split('/')[-1]  # Extract the file name from the path
-    return result_image, f"Accuracy score: {accuracy_score:.4f}\nQuery time: {query_time:.4f} seconds", file_name
+    # TODO#10: Display result with accuracy, query time, and file name
 
 # Suggested queries
 queries = [
@@ -120,8 +87,8 @@ with gr.Blocks() as gr_interface:
     with gr.Row():
         # Left Panel
         with gr.Column():
-            # Display the ingestion time of image embeddings
-            gr.Markdown(f"**Image Ingestion Time**: {ingestion_time:.4f} seconds")
+            # TODO#11: Display the ingestion time of image embeddings
+            
             gr.Markdown("### Input Panel")
             
             # Input box for custom query
@@ -131,26 +98,6 @@ with gr.Blocks() as gr_interface:
             with gr.Row():
                 submit_button = gr.Button("Submit Query")
                 cancel_button = gr.Button("Cancel")
-
-            # Custom CSS for arranging buttons like tags
-            gr.HTML("""
-            <style>
-                .button-container {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 10px;
-                }
-                .button-container button {
-                    width: auto;
-                    padding: 5px 10px;
-                    white-space: nowrap;
-                    border-radius: 5px;
-                    background-color: #f1f1f1;
-                    border: 1px solid #ccc;
-                    cursor: pointer;
-                }
-            </style>
-            """)
 
             # Suggested search phrases as buttons styled like tags
             gr.Markdown("#### Suggested Search Phrases")
@@ -162,8 +109,7 @@ with gr.Blocks() as gr_interface:
         # Right Panel
         with gr.Column():
             gr.Markdown("### Retrieved Image")
-            # Output for image result
-            image_output = gr.Image(type="pil", label="Result Image")
+            # TODO#12: Output for image result
             
             # Output for accuracy score and query time
             accuracy_output = gr.Textbox(label="Performance")
@@ -174,5 +120,4 @@ with gr.Blocks() as gr_interface:
         # Cancel button to clear the inputs
         cancel_button.click(fn=lambda: (None, ""), outputs=[image_output, accuracy_output])
 
-# Launch the Gradio interface
-gr_interface.launch()
+# TODO#13: Launch the Gradio interface
